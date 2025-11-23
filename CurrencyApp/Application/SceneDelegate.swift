@@ -18,7 +18,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         let window = UIWindow(windowScene: scene)
         
-        let rootViewController = ViewController()
+        let rootViewController = CurrencyPickerViewController()
         let navigationController = UINavigationController(rootViewController: rootViewController)
         
         window.rootViewController = navigationController
