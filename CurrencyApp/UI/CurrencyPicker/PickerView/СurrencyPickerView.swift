@@ -29,6 +29,7 @@ class CurrencyPickerView: UIView {
         super.didMoveToSuperview()
         
         setupTableView()
+        setupPointerView()
     }
     
     private func setupTableView() {
@@ -50,6 +51,33 @@ class CurrencyPickerView: UIView {
             tableView.leadingAnchor.constraint(equalTo: leadingAnchor),
             tableView.trailingAnchor.constraint(equalTo: trailingAnchor),
             tableView.bottomAnchor.constraint(equalTo: bottomAnchor),
+        ])
+    }
+    
+    private func setupPointerView() {
+        
+        let pointerView = UIView()
+        pointerView.backgroundColor = .clear
+        
+        let shape = CAShapeLayer()
+
+        let path = UIBezierPath()
+        path.move(to: CGPoint(x: 0, y: 0))
+        path.addLine(to: CGPoint(x: configuration.cellHeight / 7, y: configuration.cellHeight / 2))
+        path.addLine(to: CGPoint(x: 0, y: configuration.cellHeight))
+        path.close()
+        
+        shape.path = path.cgPath
+        shape.fillColor = configuration.pickerColor.cgColor
+        
+        pointerView.layer.addSublayer(shape)
+        
+        addSubview(pointerView)
+        pointerView.translatesAutoresizingMaskIntoConstraints = false
+        
+        NSLayoutConstraint.activate([
+            pointerView.leadingAnchor.constraint(equalTo: trailingAnchor),
+            pointerView.centerYAnchor.constraint(equalTo: centerYAnchor, constant: -(configuration.cellHeight / 2))
         ])
     }
     
