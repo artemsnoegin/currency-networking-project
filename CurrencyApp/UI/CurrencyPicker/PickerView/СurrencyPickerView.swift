@@ -30,6 +30,7 @@ class CurrencyPickerView: UIView {
         
         setupTableView()
         setupPointerView()
+        applyShadow()
     }
     
     private func setupTableView() {
@@ -79,6 +80,12 @@ class CurrencyPickerView: UIView {
             pointerView.leadingAnchor.constraint(equalTo: trailingAnchor),
             pointerView.centerYAnchor.constraint(equalTo: centerYAnchor, constant: -(configuration.cellHeight / 2))
         ])
+    }
+    
+    private func applyShadow() {
+        layer.shadowRadius = 3
+        layer.shadowOpacity = 0.3
+        layer.shadowOffset = CGSize(width: 2, height: 0)
     }
     
     override func layoutSubviews() {
