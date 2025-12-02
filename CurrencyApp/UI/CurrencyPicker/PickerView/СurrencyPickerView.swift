@@ -9,11 +9,14 @@ import UIKit
 
 class CurrencyPickerView: UIView {
     
+    weak var delegate: CurrencyPickerDelegate?
+
     var currencies = [Currency]()
     
     var configuration: CurrencyPickerConfiguration
     
     private let tableView = UITableView()
+    private let textField = UITextField()
     
     init(configuration: CurrencyPickerConfiguration) {
         self.configuration = configuration
@@ -23,6 +26,11 @@ class CurrencyPickerView: UIView {
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    func updateValue(_ stringValue: String) {
+        
+        textField.text = stringValue
     }
     
     override func didMoveToSuperview() {
@@ -86,15 +94,14 @@ class CurrencyPickerView: UIView {
     
     private func setupTextField() {
         
-        let textField = UITextField()
-        
+        textField.placeholder = "0"
         textField.font = .preferredFont(forTextStyle: .extraLargeTitle)
         textField.textColor = .white
         textField.textAlignment = .center
-        textField.keyboardType = .decimalPad
-        textField.backgroundColor = .white.withAlphaComponent(0.2)
-        textField.layer.cornerRadius = (configuration.cellHeight / 2.5) / 2
+        textField.keyboardType = .numberPad
         textField.adjustsFontSizeToFitWidth = true
+        textField.isEnabled = configuration.isBaseCurrencyPicker
+        textField.delegate = self
         
         addSubview(textField)
         textField.translatesAutoresizingMaskIntoConstraints = false
@@ -165,6 +172,8 @@ extension CurrencyPickerView: UITableViewDelegate, UITableViewDataSource {
         let cell = tableView.cellForRow(at: indexPath) as? CurrencyPickerViewCell
         cell?.setSelection(to: true)
         tableView.scrollToRow(at: indexPath, at: .middle, animated: true)
+        
+        delegate?.didUpdateCurrency(currency: currencies[indexPath.row], picker: self)
     }
         
     func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
@@ -181,5 +190,14 @@ extension CurrencyPickerView: UITableViewDelegate, UITableViewDataSource {
 
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
         selectCellWithScroll()
+    }
+}
+
+extension CurrencyPickerView: UITextFieldDelegate {
+    
+    func textFieldDidChangeSelection(_ textField: UITextField) {
+        guard let text = textField.text else { return }
+        
+        delegate?.didUpdateValue(stringValue: text, picker: self)
     }
 }

@@ -10,6 +10,9 @@ import UIKit
 class CurrencyPickerViewController: UIViewController {
     
     private var currencies: [Currency]
+    private var baseCurrency: Currency?
+    private var targetCurrency: Currency?
+    private var value: Double? = 1
     
     private let leftPickerView = CurrencyPickerView(configuration: LeftCurrencyPickerConfiguration())
     private let rightPickerView = CurrencyPickerView(configuration: RightCurrencyPickerConfiguration())
@@ -21,6 +24,20 @@ class CurrencyPickerViewController: UIViewController {
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    func calculateCurrency() {
+        guard let target = targetCurrency else { return }
+        guard let value = value else { return }
+        
+        let result = value * target.value
+        
+        if result.truncatingRemainder(dividingBy: 1) == 0.0 {
+            rightPickerView.updateValue(String(Int(result)))
+        }
+        else {
+            rightPickerView.updateValue(String(result))
+        }
     }
     
     override func viewDidLoad() {
@@ -35,6 +52,21 @@ class CurrencyPickerViewController: UIViewController {
         
         leftPickerView.currencies = currencies
         rightPickerView.currencies = currencies
+        
+        if let value = value {
+            if value.truncatingRemainder(dividingBy: 1) == 0.0 {
+                leftPickerView.updateValue(String(Int(value)))
+            }
+            else {
+                leftPickerView.updateValue(String(value))
+            }
+        }
+        else {
+            leftPickerView.updateValue(String(0))
+        }
+        
+        leftPickerView.delegate = self
+        rightPickerView.delegate = self
         
         [rightPickerView, leftPickerView].forEach {
             view.addSubview($0)
@@ -52,5 +84,33 @@ class CurrencyPickerViewController: UIViewController {
             rightPickerView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             rightPickerView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
         ])
+    }
+}
+
+extension CurrencyPickerViewController: CurrencyPickerDelegate {
+    
+    func didUpdateValue(stringValue: String, picker: CurrencyPickerView) {
+        guard picker == leftPickerView else { return }
+        
+        if stringValue.isEmpty {
+            value = 0
+        }
+        else {
+            value = Double(stringValue)
+        }
+        
+        calculateCurrency()
+    }
+    
+    func didUpdateCurrency(currency: Currency, picker: CurrencyPickerView) {
+        
+        if picker == leftPickerView {
+            baseCurrency = currency
+        }
+        else {
+            targetCurrency = currency
+        }
+        
+        calculateCurrency()
     }
 }

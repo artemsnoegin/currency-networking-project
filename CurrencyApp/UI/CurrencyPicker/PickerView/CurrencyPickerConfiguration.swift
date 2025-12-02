@@ -19,6 +19,7 @@ protocol CurrencyPickerConfiguration {
     var deselectedAttributesColor: UIColor { get set }
     
     var direction: CurrencyPickerDirection { get set }
+    var isBaseCurrencyPicker: Bool { get set }
 
     var cellHeight: CGFloat { get set }
 }
@@ -31,6 +32,7 @@ struct LeftCurrencyPickerConfiguration: CurrencyPickerConfiguration {
     var deselectedAttributesColor: UIColor = .white.withProminence(.secondary)
     
     var direction: CurrencyPickerDirection = .leftToRight
+    var isBaseCurrencyPicker: Bool = true
     
     var cellHeight: CGFloat = 130
 }
@@ -42,6 +44,7 @@ struct RightCurrencyPickerConfiguration: CurrencyPickerConfiguration {
     var deselectedAttributesColor: UIColor = .black.withProminence(.secondary)
     
     var direction: CurrencyPickerDirection = .rightToLeft
+    var isBaseCurrencyPicker: Bool = false
     
     var cellHeight: CGFloat = 130
 }
