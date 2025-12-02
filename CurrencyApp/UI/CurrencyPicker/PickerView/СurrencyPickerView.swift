@@ -30,6 +30,7 @@ class CurrencyPickerView: UIView {
         
         setupTableView()
         setupPointerView()
+        setupTextField()
         applyShadow()
     }
     
@@ -39,6 +40,7 @@ class CurrencyPickerView: UIView {
         tableView.rowHeight = configuration.cellHeight
         tableView.showsVerticalScrollIndicator = false
         tableView.separatorStyle = .none
+        tableView.keyboardDismissMode = .interactive
         
         tableView.delegate = self
         tableView.dataSource = self
@@ -82,6 +84,30 @@ class CurrencyPickerView: UIView {
         ])
     }
     
+    private func setupTextField() {
+        
+        let textField = UITextField()
+        
+        textField.font = .preferredFont(forTextStyle: .extraLargeTitle)
+        textField.textColor = .white
+        textField.textAlignment = .center
+        textField.keyboardType = .decimalPad
+        textField.backgroundColor = .white.withAlphaComponent(0.2)
+        textField.layer.cornerRadius = (configuration.cellHeight / 2.5) / 2
+        textField.adjustsFontSizeToFitWidth = true
+        
+        addSubview(textField)
+        textField.translatesAutoresizingMaskIntoConstraints = false
+        
+        NSLayoutConstraint.activate([
+            textField.centerYAnchor.constraint(equalTo: centerYAnchor),
+            textField.centerXAnchor.constraint(equalTo: centerXAnchor),
+            textField.heightAnchor.constraint(equalToConstant: configuration.cellHeight / 2.5),
+            textField.widthAnchor.constraint(lessThanOrEqualToConstant: configuration.cellHeight),
+            textField.widthAnchor.constraint(greaterThanOrEqualToConstant: configuration.cellHeight / 2.5),
+        ])
+    }
+    
     private func applyShadow() {
         layer.shadowRadius = 3
         layer.shadowOpacity = 0.3
@@ -93,6 +119,8 @@ class CurrencyPickerView: UIView {
         
         let inset = (tableView.bounds.height - tableView.rowHeight) / 2
         tableView.contentInset = UIEdgeInsets(top: inset - safeAreaInsets.top,left: 0, bottom: inset - safeAreaInsets.bottom, right: 0)
+        
+        selectCellWithScroll()
     }
 
     
