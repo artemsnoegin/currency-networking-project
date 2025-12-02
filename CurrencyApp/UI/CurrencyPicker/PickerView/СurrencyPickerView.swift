@@ -80,7 +80,7 @@ class CurrencyPickerView: UIView {
         
         NSLayoutConstraint.activate([
             pointerView.leadingAnchor.constraint(equalTo: trailingAnchor),
-            pointerView.centerYAnchor.constraint(equalTo: centerYAnchor, constant: -(configuration.cellHeight / 2))
+            pointerView.centerYAnchor.constraint(equalTo: centerYAnchor, constant: -(configuration.cellHeight * 2) + configuration.cellHeight / 2)
         ])
     }
     
@@ -100,7 +100,7 @@ class CurrencyPickerView: UIView {
         textField.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            textField.centerYAnchor.constraint(equalTo: centerYAnchor),
+            textField.centerYAnchor.constraint(equalTo: centerYAnchor, constant: -configuration.cellHeight),
             textField.centerXAnchor.constraint(equalTo: centerXAnchor),
             textField.heightAnchor.constraint(equalToConstant: configuration.cellHeight / 2.5),
             textField.widthAnchor.constraint(lessThanOrEqualToConstant: configuration.cellHeight),
@@ -118,7 +118,7 @@ class CurrencyPickerView: UIView {
         super.layoutSubviews()
         
         let inset = (tableView.bounds.height - tableView.rowHeight) / 2
-        tableView.contentInset = UIEdgeInsets(top: inset - safeAreaInsets.top,left: 0, bottom: inset - safeAreaInsets.bottom, right: 0)
+        tableView.contentInset = UIEdgeInsets(top: inset - safeAreaInsets.top - configuration.cellHeight,left : 0, bottom: inset - safeAreaInsets.bottom + configuration.cellHeight, right: 0)
         
         selectCellWithScroll()
     }
@@ -126,7 +126,7 @@ class CurrencyPickerView: UIView {
     
     private func selectCellWithScroll() {
 
-        let center = CGPoint(x: tableView.bounds.midX, y: tableView.bounds.midY)
+        let center = CGPoint(x: tableView.bounds.midX, y: tableView.bounds.midY - configuration.cellHeight)
         
         guard let nextSelectedRowIndexPath = tableView.indexPathForRow(at: center) else { return }
         
