@@ -9,10 +9,54 @@ import Foundation
 
 class NetworkService {
     
-    private let url = "https://api.freecurrencyapi.com/v1/currencies?apikey=fca_live_v6rL3B3vrtfhxSaUWRg4KemJioVW4uBzOjz0furr"
+    private let key = "fca_live_v6rL3B3vrtfhxSaUWRg4KemJioVW4uBzOjz0furr"
+    private let urlString = "https://api.freecurrencyapi.com/v1"
     
-    func requestData(completion: @escaping (Result<Data, NetworkServiceError>) -> Void) {
-        guard let url = URL(string: url) else {
+    func currenciesData(completion: @escaping (Result<Data, NetworkServiceError>) -> Void) {
+        let urlString = "\(urlString)/currencies?apikey=\(key)"
+        
+        requestData(using: urlString) { result in
+            switch result {
+            case .success(let data):
+                completion(.success(data))
+            case .failure(let error):
+                completion(.failure(error))
+            }
+        }
+    }
+    
+    func latestCurrencyData(for currency: Currency,
+                            completion: @escaping (Result<Data, NetworkServiceError>) -> Void) {
+        let urlString = "\(urlString)/latest?apikey=\(key)&currencies=&base_currency=\(currency.code)"
+        
+        requestData(using: urlString) { result in
+            switch result {
+            case .success(let data):
+                completion(.success(data))
+            case .failure(let error):
+                completion(.failure(error))
+            }
+        }
+    }
+    
+    func latestCurrencyDataForPair(base baseCurrency: Currency,
+                                   target targetCurrency: Currency,
+                                   completion: @escaping (Result<Data, NetworkServiceError>) -> Void) {
+        let urlString = "\(urlString)/latest?apikey=\(key)&currencies=\(targetCurrency.code)&base_currency=\(baseCurrency.code)"
+        
+        requestData(using: urlString) { result in
+            switch result {
+            case .success(let data):
+                completion(.success(data))
+            case .failure(let error):
+                completion(.failure(error))
+            }
+        }
+    }
+    
+    private func requestData(using urlString: String,
+                             completion: @escaping (Result<Data, NetworkServiceError>) -> Void) {
+        guard let url = URL(string: urlString) else {
             completion(.failure(NetworkServiceError.invalidURL))
             return
         }
