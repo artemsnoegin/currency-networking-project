@@ -12,52 +12,38 @@ class NetworkService {
     private let key = "fca_live_v6rL3B3vrtfhxSaUWRg4KemJioVW4uBzOjz0furr"
     private let urlString = "https://api.freecurrencyapi.com/v1"
     
-    func currenciesData(completion: @escaping (Result<Data, NetworkServiceError>) -> Void) {
+    func fetchCurrencies(completion: @escaping (Result<[Currency], NetworkServiceError>) -> Void) {
         let urlString = "\(urlString)/currencies?apikey=\(key)"
         
-        requestData(using: urlString) { result in
+        request(using: urlString) { (result: Result<CurrencyResponse, NetworkServiceError>) in
             switch result {
-            case .success(let data):
-                completion(.success(data))
+            case .success(let response):
+                let currencies = Array(response.data.values)
+                completion(.success(currencies))
             case .failure(let error):
                 completion(.failure(error))
             }
         }
     }
     
-    func latestCurrencyData(for currency: Currency,
-                            completion: @escaping (Result<Data, NetworkServiceError>) -> Void) {
+    func fetchExchangeRates(for currency: Currency,
+                            completion: @escaping (Result<[String: Double], NetworkServiceError>) -> Void) {
         let urlString = "\(urlString)/latest?apikey=\(key)&currencies=&base_currency=\(currency.code)"
         
-        requestData(using: urlString) { result in
+        request(using: urlString) { (result: Result<ExchangeRatesResponse, NetworkServiceError>) in
             switch result {
-            case .success(let data):
-                completion(.success(data))
+            case .success(let response):
+                completion(.success(response.data))
             case .failure(let error):
                 completion(.failure(error))
             }
         }
     }
     
-    func latestCurrencyDataForPair(base baseCurrency: Currency,
-                                   target targetCurrency: Currency,
-                                   completion: @escaping (Result<Data, NetworkServiceError>) -> Void) {
-        let urlString = "\(urlString)/latest?apikey=\(key)&currencies=\(targetCurrency.code)&base_currency=\(baseCurrency.code)"
-        
-        requestData(using: urlString) { result in
-            switch result {
-            case .success(let data):
-                completion(.success(data))
-            case .failure(let error):
-                completion(.failure(error))
-            }
-        }
-    }
-    
-    private func requestData(using urlString: String,
-                             completion: @escaping (Result<Data, NetworkServiceError>) -> Void) {
+    private func request<T:Decodable>(using urlString: String,
+                             completion: @escaping (Result<T, NetworkServiceError>) -> Void) {
         guard let url = URL(string: urlString) else {
-            completion(.failure(NetworkServiceError.invalidURL))
+            completion(.failure(.invalidURL))
             return
         }
         
@@ -65,29 +51,35 @@ class NetworkService {
         
         URLSession.shared.dataTask(with: request) { data, response, error in
             if let error = error {
-                completion(.failure(NetworkServiceError.network(error: error)))
+                completion(.failure(.network(error: error)))
                 return
             }
             
             guard let data = data else {
-                completion(.failure(NetworkServiceError.invalidData))
+                completion(.failure(.invalidData))
                 return
             }
-            completion(.success(data))
             
+            do {
+                let decoded = try JSONDecoder().decode(T.self, from: data)
+                completion(.success(decoded))
+            } catch {
+                completion(.failure(.decoding(error: error)))
+            }
+
             if let httpResponse = response as? HTTPURLResponse {
                 guard httpResponse.statusCode != 200 else { return }
                 
                 if let decoded = try? JSONDecoder().decode(ResponseErrorMessage.self, from: data) {
-                    completion(.failure(NetworkServiceError.server(
+                    completion(.failure(.server(
                         message: "\(httpResponse.statusCode) \(decoded.message)")))
                 }
                 else {
-                    completion(.failure(NetworkServiceError.invalidResponseErrorMessage))
+                    completion(.failure(.invalidResponseErrorMessage))
                 }
             }
             else {
-               completion(.failure(NetworkServiceError.invalidResponse))
+               completion(.failure(.invalidResponse))
            }
         }.resume()
     }

@@ -18,21 +18,21 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         let window = UIWindow(windowScene: scene)
         
-        let mockCurrencies = [
-            Currency(code: "RUB", value: 0),
-            Currency(code: "USD", value: 1),
-            Currency(code: "EUR", value: 2.2),
-            Currency(code: "JPY", value: 3),
-            Currency(code: "GBP", value: 4),
-            Currency(code: "AUD", value: 5.5),
-            Currency(code: "CAD", value: 6),
-            Currency(code: "CHF", value: 7),
-            Currency(code: "CNH", value: 8.8),
-            Currency(code: "HKD", value: 9),
-            Currency(code: "NZD", value: 10)
-        ]
+//        let mockCurrencies = [
+//            Currency(code: "RUB", value: 0),
+//            Currency(code: "USD", value: 1),
+//            Currency(code: "EUR", value: 2.2),
+//            Currency(code: "JPY", value: 3),
+//            Currency(code: "GBP", value: 4),
+//            Currency(code: "AUD", value: 5.5),
+//            Currency(code: "CAD", value: 6),
+//            Currency(code: "CHF", value: 7),
+//            Currency(code: "CNH", value: 8.8),
+//            Currency(code: "HKD", value: 9),
+//            Currency(code: "NZD", value: 10)
+//        ]
         
-        let rootViewController = CurrencyPickerViewController(currencies: mockCurrencies)
+        let rootViewController = CurrencyPickerViewController()
         let navigationController = UINavigationController(rootViewController: rootViewController)
         
         window.rootViewController = navigationController
