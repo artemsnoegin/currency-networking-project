@@ -10,7 +10,7 @@ import UIKit
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
-
+    var coordinator: AppCoordinator?
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         
@@ -18,22 +18,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         let window = UIWindow(windowScene: scene)
         
-//        let mockCurrencies = [
-//            Currency(code: "RUB", value: 0),
-//            Currency(code: "USD", value: 1),
-//            Currency(code: "EUR", value: 2.2),
-//            Currency(code: "JPY", value: 3),
-//            Currency(code: "GBP", value: 4),
-//            Currency(code: "AUD", value: 5.5),
-//            Currency(code: "CAD", value: 6),
-//            Currency(code: "CHF", value: 7),
-//            Currency(code: "CNH", value: 8.8),
-//            Currency(code: "HKD", value: 9),
-//            Currency(code: "NZD", value: 10)
-//        ]
+        let navigationController = UINavigationController()
         
-        let rootViewController = CurrencyPickerViewController()
-        let navigationController = UINavigationController(rootViewController: rootViewController)
+        coordinator = AppCoordinator(navigationController: navigationController)
+        coordinator?.start()
         
         window.rootViewController = navigationController
         window.makeKeyAndVisible()
