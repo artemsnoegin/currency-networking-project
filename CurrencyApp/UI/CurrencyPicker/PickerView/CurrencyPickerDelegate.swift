@@ -7,6 +7,6 @@
 
 protocol CurrencyPickerDelegate: AnyObject {
     
-    func didUpdateValue(stringValue: String, picker: CurrencyPickerView)
-    func didUpdateCurrency(currency: Currency, picker: CurrencyPickerView)
+    func didChange(amount stringAmount: String, in picker: CurrencyPickerView)
+    func didSelectCurrency(_ currency: Currency, in picker: CurrencyPickerView)
 }

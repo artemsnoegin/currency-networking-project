@@ -17,6 +17,7 @@ class CurrencyPickerViewCell: UITableViewCell {
     private let attributeStack = UIStackView()
     private let codeLabel = UILabel()
     private let segment = UIView()
+    private var segmentWidthConstraint: NSLayoutConstraint?
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -28,7 +29,10 @@ class CurrencyPickerViewCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func configure(for currency: Currency, selectedColor: UIColor, deselectedColor: UIColor, direction: CurrencyPickerDirection) {
+    func configure(for currency: Currency,
+                   selectedColor: UIColor,
+                   deselectedColor: UIColor,
+                   direction: CurrencyPickerDirection) {
         
         codeLabel.text = currency.code
         
@@ -40,13 +44,18 @@ class CurrencyPickerViewCell: UITableViewCell {
     }
     
     func setSelection(to selected: Bool) {
-        
         codeLabel.textColor = selected ? selectedColor : deselectedColor
         segment.backgroundColor = selected ? selectedColor : deselectedColor
+        segmentWidthConstraint?.constant = selected ? 5 : 10
+        attributeStack.spacing = selected ? 7 : 2
+        
+        UIView.animate(withDuration: 0.2) {
+            self.codeLabel.transform = selected ? CGAffineTransform(scaleX: 1.1, y: 1.1) : .identity
+            self.layoutIfNeeded()
+        }
     }
     
     func setDirection(to direction: CurrencyPickerDirection) {
-        
         if !attributeStack.arrangedSubviews.isEmpty {
             
             attributeStack.arrangedSubviews.forEach {
@@ -67,13 +76,13 @@ class CurrencyPickerViewCell: UITableViewCell {
     }
     
     private func setupUI() {
-        
         backgroundColor = .clear
         
         codeLabel.font = .preferredFont(forTextStyle: .headline)
         
+        segmentWidthConstraint = segment.widthAnchor.constraint(equalToConstant: 10)
+        segmentWidthConstraint?.isActive = true
         segment.heightAnchor.constraint(equalToConstant: 2).isActive = true
-        segment.widthAnchor.constraint(equalToConstant: 10).isActive = true
         segment.layer.cornerRadius = 1
         
         attributeStack.axis = .horizontal

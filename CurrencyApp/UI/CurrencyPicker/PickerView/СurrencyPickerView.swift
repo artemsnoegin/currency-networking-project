@@ -8,12 +8,12 @@
 import UIKit
 
 class CurrencyPickerView: UIView {
+
+    var configuration: CurrencyPickerConfiguration
     
     weak var delegate: CurrencyPickerDelegate?
-
-    var currencies = [Currency]()
     
-    var configuration: CurrencyPickerConfiguration
+    private var currencies: [Currency] = [Currency]()
     
     private let tableView = UITableView()
     private let textField = UITextField()
@@ -28,9 +28,17 @@ class CurrencyPickerView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func updateValue(_ stringValue: String) {
+    func setCurrencies(_ currencies: [Currency]) {
+        self.currencies = currencies
         
-        textField.text = stringValue
+        DispatchQueue.main.async { [weak self] in
+            self?.tableView.reloadData()
+            self?.selectCellWithScroll()
+        }
+    }
+    
+    func setCurrencyAmount(_ stringAmount: String?) {
+        textField.text = stringAmount
     }
     
     override func didMoveToSuperview() {
@@ -42,8 +50,31 @@ class CurrencyPickerView: UIView {
         applyShadow()
     }
     
-    private func setupTableView() {
+    override func layoutSubviews() {
+        super.layoutSubviews()
         
+        let inset = (tableView.bounds.height - tableView.rowHeight) / 2
+        tableView.contentInset = UIEdgeInsets(top: inset - safeAreaInsets.top - configuration.cellHeight,left : 0, bottom: inset - safeAreaInsets.bottom + configuration.cellHeight, right: 0)
+        
+        selectCellWithScroll()
+    }
+    
+    private func selectCellWithScroll() {
+        let center = CGPoint(x: tableView.bounds.midX, y: tableView.bounds.midY - configuration.cellHeight)
+        
+        guard let nextSelectedRowIndexPath = tableView.indexPathForRow(at: center) else { return }
+        
+        if let previousSelectedRowIndexPath = tableView.indexPathForSelectedRow {
+            
+            tableView.deselectRow(at: previousSelectedRowIndexPath, animated: true)
+            tableView.delegate?.tableView?(tableView, didDeselectRowAt: previousSelectedRowIndexPath)
+        }
+        
+        tableView.selectRow(at: nextSelectedRowIndexPath, animated: true, scrollPosition: .none)
+        tableView.delegate?.tableView?(tableView, didSelectRowAt: nextSelectedRowIndexPath)
+    }
+    
+    private func setupTableView() {
         tableView.backgroundColor = configuration.pickerColor
         tableView.rowHeight = configuration.cellHeight
         tableView.showsVerticalScrollIndicator = false
@@ -66,7 +97,6 @@ class CurrencyPickerView: UIView {
     }
     
     private func setupPointerView() {
-        
         let pointerView = UIView()
         pointerView.backgroundColor = .clear
         
@@ -93,8 +123,7 @@ class CurrencyPickerView: UIView {
     }
     
     private func setupTextField() {
-        
-        textField.placeholder = "0"
+        textField.placeholder = "..."
         textField.font = .preferredFont(forTextStyle: .extraLargeTitle)
         textField.textColor = .white
         textField.textAlignment = .center
@@ -102,6 +131,8 @@ class CurrencyPickerView: UIView {
         textField.adjustsFontSizeToFitWidth = true
         textField.isEnabled = configuration.isBaseCurrencyPicker
         textField.delegate = self
+        textField.backgroundColor = configuration.pickerColor.withAlphaComponent(0.5)
+        textField.layer.cornerRadius = 5
         
         addSubview(textField)
         textField.translatesAutoresizingMaskIntoConstraints = false
@@ -120,32 +151,6 @@ class CurrencyPickerView: UIView {
         layer.shadowOpacity = 0.3
         layer.shadowOffset = CGSize(width: 2, height: 0)
     }
-    
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        
-        let inset = (tableView.bounds.height - tableView.rowHeight) / 2
-        tableView.contentInset = UIEdgeInsets(top: inset - safeAreaInsets.top - configuration.cellHeight,left : 0, bottom: inset - safeAreaInsets.bottom + configuration.cellHeight, right: 0)
-        
-        selectCellWithScroll()
-    }
-
-    
-    private func selectCellWithScroll() {
-
-        let center = CGPoint(x: tableView.bounds.midX, y: tableView.bounds.midY - configuration.cellHeight)
-        
-        guard let nextSelectedRowIndexPath = tableView.indexPathForRow(at: center) else { return }
-        
-        if let previousSelectedRowIndexPath = tableView.indexPathForSelectedRow {
-            
-            tableView.deselectRow(at: previousSelectedRowIndexPath, animated: true)
-            tableView.delegate?.tableView?(tableView, didDeselectRowAt: previousSelectedRowIndexPath)
-        }
-        
-        tableView.selectRow(at: nextSelectedRowIndexPath, animated: true, scrollPosition: .none)
-        tableView.delegate?.tableView?(tableView, didSelectRowAt: nextSelectedRowIndexPath)
-    }
 }
 
 extension CurrencyPickerView: UITableViewDelegate, UITableViewDataSource {
@@ -155,7 +160,6 @@ extension CurrencyPickerView: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        
         guard let cell = tableView.dequeueReusableCell(withIdentifier: CurrencyPickerViewCell.reuseIdentifier, for: indexPath) as? CurrencyPickerViewCell else { return UITableViewCell() }
         
         cell.configure(for: currencies[indexPath.row],
@@ -168,18 +172,24 @@ extension CurrencyPickerView: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        
         let cell = tableView.cellForRow(at: indexPath) as? CurrencyPickerViewCell
         cell?.setSelection(to: true)
         tableView.scrollToRow(at: indexPath, at: .middle, animated: true)
         
-        delegate?.didUpdateCurrency(currency: currencies[indexPath.row], picker: self)
+        delegate?.didSelectCurrency(currencies[indexPath.row], in: self)
     }
         
     func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
-        
         let cell = tableView.cellForRow(at: indexPath) as? CurrencyPickerViewCell
         cell?.setSelection(to: false)
+    }
+    
+    func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+        if let selectedRowIndexPath = tableView.indexPathForSelectedRow {
+            
+            let cell = tableView.cellForRow(at: selectedRowIndexPath) as? CurrencyPickerViewCell
+            cell?.setSelection(to: false)
+        }
     }
     
     func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
@@ -198,6 +208,6 @@ extension CurrencyPickerView: UITextFieldDelegate {
     func textFieldDidChangeSelection(_ textField: UITextField) {
         guard let text = textField.text else { return }
         
-        delegate?.didUpdateValue(stringValue: text, picker: self)
+        delegate?.didChange(amount: text, in: self)
     }
 }
