@@ -31,4 +31,17 @@ extension NetworkServiceError: LocalizedError {
         case .invalidResponseErrorMessage: return "NetworkService error: invalid response message"
         }
     }
+    
+    var userMessage: String {
+        switch self {
+        case .network:
+            return "Internet connection issues\nPull down to restart"
+        case .server:
+            return "The server is temporarily unavailable\nPull down to restart"
+        case .decoding, .invalidData:
+            return "Something went wrong\nPull down to restart"
+        case .invalidURL, .invalidResponse, .invalidResponseErrorMessage:
+            return "An unexpected error occurred\nPull down to restart"
+        }
+    }
 }
