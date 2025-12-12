@@ -27,12 +27,16 @@ class CurrencyPickerViewController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
+    override func loadView() {
+        super.loadView()
+        
+        viewModel.getCurrencies()
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         bind()
-        viewModel.getCurrencies()
-        
         setupPickerView()
         setupErrorView()
     }
@@ -42,11 +46,6 @@ class CurrencyPickerViewController: UIViewController {
             DispatchQueue.main.async { [weak self] in
                 self?.leftPickerView.setCurrencies(currencies)
                 self?.rightPickerView.setCurrencies(currencies)
-            }
-        }
-        viewModel.selectedString.bind { amount in
-            DispatchQueue.main.async { [weak self] in
-                self?.leftPickerView.setCurrencyAmount(amount)
             }
         }
         viewModel.convertedString.bind { amount in
@@ -69,6 +68,8 @@ class CurrencyPickerViewController: UIViewController {
     }
     
     private func setupPickerView() {
+        leftPickerView.setCurrencyAmount(viewModel.inputString)
+        
         leftPickerView.delegate = self
         rightPickerView.delegate = self
         
@@ -140,17 +141,17 @@ extension CurrencyPickerViewController: CurrencyPickerDelegate {
     func didChange(amount stringAmount: String, in picker: CurrencyPickerView) {
         guard picker == leftPickerView else { return }
         
-        viewModel.selectedString.value = stringAmount
+        viewModel.inputString = stringAmount
         viewModel.calculateExchangeRate()
     }
     
     func didSelectCurrency(_ currency: Currency, in picker: CurrencyPickerView) {
         
         if picker == leftPickerView {
-            viewModel.baseCurrency.value = currency
+            viewModel.baseCurrency = currency
         }
         else {
-            viewModel.targetCurrency.value = currency
+            viewModel.targetCurrency = currency
         }
         
         viewModel.calculateExchangeRate()

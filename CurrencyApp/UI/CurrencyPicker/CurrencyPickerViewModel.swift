@@ -12,46 +12,66 @@ class CurrencyPickerViewModel {
     var currencies: Bindable<[Currency]> = Bindable([])
     var errorMessage: Bindable<String?> = Bindable(nil)
     
-    var baseCurrency: Bindable<Currency?> = Bindable(nil)
-    var targetCurrency: Bindable<Currency?> = Bindable(nil)
+    var baseCurrency: Currency? = nil
+    var targetCurrency: Currency? = nil
     
-    var selectedString: Bindable<String?> = Bindable("1")
+    var inputString: String? = "1"
     var convertedString: Bindable<String?> = Bindable(nil)
     
-    private let networkService: NetworkService
+    private var exchangeRates = [String: [String: Double]]()
     
-    init(networkService: NetworkService) {
+    private let networkService: NetworkService
+    private let fileManager: UserFileManager
+
+    init(networkService: NetworkService, fileManager: UserFileManager) {
         self.networkService = networkService
+        self.fileManager = fileManager
     }
     
     func getCurrencies() {
-        networkService.fetchCurrencies { [weak self] result in
-            print("Fetching currencies")
-            
-            switch result {
-            case .success(let currencies):
-                self?.currencies.value = currencies.sorted { $0.code < $1.code }
-            case .failure(let error):
-                let debugMessage = error.errorDescription ?? NetworkServiceError.undefinedErrorMessage
-                self?.errorMessage.value = error.userMessage
-                print(debugMessage)
+        
+        if let cashed = fileManager.loadCurrenciesFromTemp() {
+            self.currencies.value = cashed
+            print("Currencies loaded from cash")
+        }
+        else {
+            networkService.fetchCurrencies { [weak self] result in
+                print("Fetching currencies")
+                
+                switch result {
+                case .success(let currencies):
+                    let sorted = currencies.sorted { $0.code < $1.code }
+                    self?.currencies.value = sorted
+                    self?.fileManager.saveToTemp(sorted)
+                case .failure(let error):
+                    let debugMessage = error.errorDescription ?? NetworkServiceError.undefinedErrorMessage
+                    self?.errorMessage.value = error.userMessage
+                    print(debugMessage)
+                }
             }
         }
+
         resetErrorMessage()
     }
     
     func calculateExchangeRate() {
-        guard let base = baseCurrency.value,
-              let target = targetCurrency.value,
-              let amountString = selectedString.value else {
+        guard let base = baseCurrency,
+              let target = targetCurrency,
+              let amountString = inputString else {
             convertedString.value = nil
-            print("Currencies are not selected")
             return
         }
         
-        if let baseRates = base.exchangeRates,
+        if let baseRates = exchangeRates[base.code],
            let targetRate = baseRates[target.code] {
             convertedString.value = calculateResult(base: amountString, target: targetRate)
+        }
+        else if let cashed = fileManager.loadExchangeRatesFromTemp(for: base) {
+            exchangeRates[base.code] = cashed
+            if let targetRate = cashed[target.code] {
+                print("Exchange rates for \(base.code) loaded from cash")
+                convertedString.value = calculateResult(base: amountString, target: targetRate)
+            }
         }
         else {
             networkService.fetchExchangeRates(for: base) { [weak self] result in
@@ -59,9 +79,11 @@ class CurrencyPickerViewModel {
                 print("Fetching exchange rates for \(base.code)")
                 
                 switch result {
-                case .success(let baseRates):
-                    if let updatedBase = updateCurrency(base, with: baseRates),
-                       let targetRate = updatedBase.exchangeRates?[target.code] {
+                case .success(let rates):
+                    self.exchangeRates[base.code] = rates
+                    self.fileManager.saveToTemp(rates, of: base)
+                    
+                    if let targetRate = rates[target.code] {
                         self.convertedString.value = self.calculateResult(base: amountString, target: targetRate)
                     }
                 case .failure(let error):
@@ -73,23 +95,6 @@ class CurrencyPickerViewModel {
             }
         }
         resetErrorMessage()
-    }
-
-    private func updateCurrency(_ currency: Currency, with rates: [String: Double]) -> Currency? {
-        guard let index = currencies.value.firstIndex(where: { $0 == currency }) else {
-            print("Could't find index for currency")
-            return nil
-        }
-        
-        var updatedCurrency = currencies.value[index]
-        updatedCurrency.exchangeRates = rates
-        
-        var updatedCurrencies = currencies.value
-        updatedCurrencies[index] = updatedCurrency
-        
-        currencies.value = updatedCurrencies
-        
-        return updatedCurrency
     }
     
     private func calculateResult(base: String, target: Double) -> String? {

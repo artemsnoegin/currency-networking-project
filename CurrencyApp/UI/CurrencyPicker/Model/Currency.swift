@@ -5,7 +5,7 @@
 //  Created by Артём Сноегин on 24.11.2025.
 //
 
-struct Currency: Decodable, Equatable {
+struct Currency: Codable, Equatable {
     
     let symbol: String
     let name: String
@@ -15,9 +15,7 @@ struct Currency: Decodable, Equatable {
     let code: String
     let namePlural: String
     let type: String
-    
-    var exchangeRates: [String:Double]? = nil
-    
+
     enum CodingKeys: String, CodingKey {
         case symbol
         case name
