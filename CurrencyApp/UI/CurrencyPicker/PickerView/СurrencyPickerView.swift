@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import AudioToolbox
 
 class CurrencyPickerView: UIView {
 
@@ -17,6 +18,8 @@ class CurrencyPickerView: UIView {
     
     private let tableView = UITableView()
     private let textField = UITextField()
+    
+    private let impactFeedback = UIImpactFeedbackGenerator(style: .light)
     
     init(configuration: CurrencyPickerConfiguration) {
         self.configuration = configuration
@@ -190,16 +193,22 @@ extension CurrencyPickerView: UITableViewDelegate, UITableViewDataSource {
             let cell = tableView.cellForRow(at: selectedRowIndexPath) as? CurrencyPickerViewCell
             cell?.setSelection(to: false)
         }
+        
+        impactFeedback.prepare()
     }
     
     func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
         if !decelerate {
             selectCellWithScroll()
+            AudioServicesPlaySystemSound(SystemSoundID(1157))
+            impactFeedback.impactOccurred(intensity: 1)
         }
     }
 
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
         selectCellWithScroll()
+        AudioServicesPlaySystemSound(SystemSoundID(1157))
+        impactFeedback.impactOccurred(intensity: 0.5)
     }
 }
 
