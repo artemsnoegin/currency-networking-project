@@ -11,8 +11,8 @@ class CurrencyPickerViewController: UIViewController {
     
     private let viewModel: CurrencyPickerViewModel
     
-    private let leftPickerView = CurrencyPickerView(configuration: LeftCurrencyPickerConfiguration())
-    private let rightPickerView = CurrencyPickerView(configuration: RightCurrencyPickerConfiguration())
+    private let leftPickerView = CurrencyPickerView(configuration: BasePickerConfiguration())
+    private let rightPickerView = CurrencyPickerView(configuration: TargetPickerConfiguration())
     private let errorView = UIView()
     private var errorViewHeightConstraint: NSLayoutConstraint?
     private let errorLabel = UILabel()
@@ -138,15 +138,15 @@ class CurrencyPickerViewController: UIViewController {
 
 extension CurrencyPickerViewController: CurrencyPickerDelegate {
     
-    func didChange(amount stringAmount: String, in picker: CurrencyPickerView) {
-        guard picker == leftPickerView else { return }
+    func didChange(amount stringAmount: String, in picker: CurrencyPickerType) {
+        guard picker == .base else { return }
         
         viewModel.updateInputAmount(stringAmount)
     }
     
-    func didSelectCurrency(_ currency: Currency, in picker: CurrencyPickerView) {
+    func didSelectCurrency(_ currency: Currency, in picker: CurrencyPickerType) {
         
-        if picker == leftPickerView {
+        if picker == .base {
             viewModel.updateBaseCurrency(currency)
         }
         else {
