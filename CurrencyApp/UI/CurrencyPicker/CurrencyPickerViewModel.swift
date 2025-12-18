@@ -31,8 +31,8 @@ class CurrencyPickerViewModel {
     func updateBaseCurrency(_ currency: Currency) {
         baseCurrency = currency
         
-        guard let inputAmount = inputAmount,
-              let targetCurrency = targetCurrency else { return }
+        guard inputAmount != nil,
+              targetCurrency != nil else { return }
         
         calculateExchangeRate()
     }
@@ -40,8 +40,8 @@ class CurrencyPickerViewModel {
     func updateTargetCurrency(_ currency: Currency) {
         targetCurrency = currency
         
-        guard let inputAmount = inputAmount,
-              let baseCurrency = baseCurrency else { return }
+        guard inputAmount != nil,
+              baseCurrency != nil else { return }
         
         calculateExchangeRate()
     }
@@ -49,8 +49,8 @@ class CurrencyPickerViewModel {
     func updateInputAmount(_ amount: String) {
         inputAmount = amount
         
-        guard let baseCurrency = baseCurrency,
-              let targetCurrency = targetCurrency else { return }
+        guard baseCurrency != nil,
+              targetCurrency != nil else { return }
         
         calculateExchangeRate()
     }
