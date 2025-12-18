@@ -9,7 +9,7 @@ import Foundation
 
 class NetworkService {
     
-    private let key = "fca_live_v6rL3B3vrtfhxSaUWRg4KemJioVW4uBzOjz0furr"
+    private let key = Bundle.main.object(forInfoDictionaryKey: "CURRENCY_API_KEY") as? String ?? ""
     private let urlString = "https://api.freecurrencyapi.com/v1"
     
     func fetchCurrencies(completion: @escaping (Result<[Currency], NetworkServiceError>) -> Void) {

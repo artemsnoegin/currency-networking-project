@@ -6,7 +6,12 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		D936F1A12EF433FA0015F7F2 /* Config.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = D936F1A02EF433FA0015F7F2 /* Config.xcconfig */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
+		D936F1A02EF433FA0015F7F2 /* Config.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Config.xcconfig; sourceTree = "<group>"; };
 		D988B5402ED1CFC4000E5823 /* CurrencyApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CurrencyApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -45,6 +50,7 @@
 		D988B5372ED1CFC4000E5823 = {
 			isa = PBXGroup;
 			children = (
+				D936F1A02EF433FA0015F7F2 /* Config.xcconfig */,
 				D988B5422ED1CFC4000E5823 /* CurrencyApp */,
 				D988B5412ED1CFC4000E5823 /* Products */,
 			);
@@ -122,6 +128,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D936F1A12EF433FA0015F7F2 /* Config.xcconfig in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -204,6 +211,7 @@
 		};
 		D988B5562ED1CFC6000E5823 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = D936F1A02EF433FA0015F7F2 /* Config.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -268,6 +276,7 @@
 		};
 		D988B5572ED1CFC6000E5823 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = D936F1A02EF433FA0015F7F2 /* Config.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;

@@ -1,0 +1,8 @@
+//
+//  Config.xcconfig
+//  CurrencyApp
+//
+//  Created by Артём Сноегин on 18.12.2025.
+//
+
+CURRENCY_API_KEY = your_api_key_goes_here
