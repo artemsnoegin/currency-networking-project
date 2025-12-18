@@ -12,10 +12,10 @@ class CurrencyPickerViewModel {
     var currencies: Bindable<[Currency]> = Bindable([])
     var errorMessage: Bindable<String?> = Bindable(nil)
     
-    var baseCurrency: Currency? = nil
-    var targetCurrency: Currency? = nil
+    private var baseCurrency: Currency? = nil
+    private var targetCurrency: Currency? = nil
     
-    var inputString: String? = "1"
+    private var inputAmount: String? = "1"
     var convertedString: Bindable<String?> = Bindable(nil)
     
     private var exchangeRates = [String: [String: Double]]()
@@ -26,6 +26,37 @@ class CurrencyPickerViewModel {
     init(networkService: NetworkService, fileManager: UserFileManager) {
         self.networkService = networkService
         self.fileManager = fileManager
+    }
+    
+    func updateBaseCurrency(_ currency: Currency) {
+        baseCurrency = currency
+        
+        guard let inputAmount = inputAmount,
+              let targetCurrency = targetCurrency else { return }
+        
+        calculateExchangeRate()
+    }
+    
+    func updateTargetCurrency(_ currency: Currency) {
+        targetCurrency = currency
+        
+        guard let inputAmount = inputAmount,
+              let baseCurrency = baseCurrency else { return }
+        
+        calculateExchangeRate()
+    }
+    
+    func updateInputAmount(_ amount: String) {
+        inputAmount = amount
+        
+        guard let baseCurrency = baseCurrency,
+              let targetCurrency = targetCurrency else { return }
+        
+        calculateExchangeRate()
+    }
+    
+    func currentInputAmount() -> String? {
+        inputAmount
     }
     
     func getCurrencies() {
@@ -54,10 +85,10 @@ class CurrencyPickerViewModel {
         resetErrorMessage()
     }
     
-    func calculateExchangeRate() {
+    private func calculateExchangeRate() {
         guard let base = baseCurrency,
               let target = targetCurrency,
-              let amountString = inputString else {
+              let amountString = inputAmount else {
             convertedString.value = nil
             return
         }

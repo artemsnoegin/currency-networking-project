@@ -68,7 +68,7 @@ class CurrencyPickerViewController: UIViewController {
     }
     
     private func setupPickerView() {
-        leftPickerView.setCurrencyAmount(viewModel.inputString)
+        leftPickerView.setCurrencyAmount(viewModel.currentInputAmount())
         
         leftPickerView.delegate = self
         rightPickerView.delegate = self
@@ -141,19 +141,16 @@ extension CurrencyPickerViewController: CurrencyPickerDelegate {
     func didChange(amount stringAmount: String, in picker: CurrencyPickerView) {
         guard picker == leftPickerView else { return }
         
-        viewModel.inputString = stringAmount
-        viewModel.calculateExchangeRate()
+        viewModel.updateInputAmount(stringAmount)
     }
     
     func didSelectCurrency(_ currency: Currency, in picker: CurrencyPickerView) {
         
         if picker == leftPickerView {
-            viewModel.baseCurrency = currency
+            viewModel.updateBaseCurrency(currency)
         }
         else {
-            viewModel.targetCurrency = currency
+            viewModel.updateTargetCurrency(currency)
         }
-        
-        viewModel.calculateExchangeRate()
     }
 }
