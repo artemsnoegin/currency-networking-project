@@ -39,7 +39,7 @@ struct BasePickerConfiguration: CurrencyPickerConfiguration {
     var direction: CurrencyPickerDirection = .leftToRight
     var pickerType: CurrencyPickerType = .base
     
-    var cellHeight: CGFloat = 130
+    var cellHeight: CGFloat = 120
 }
 
 struct TargetPickerConfiguration: CurrencyPickerConfiguration {
@@ -51,6 +51,6 @@ struct TargetPickerConfiguration: CurrencyPickerConfiguration {
     var direction: CurrencyPickerDirection = .rightToLeft
     var pickerType: CurrencyPickerType = .target
     
-    var cellHeight: CGFloat = 130
+    var cellHeight: CGFloat = 120
 }
 

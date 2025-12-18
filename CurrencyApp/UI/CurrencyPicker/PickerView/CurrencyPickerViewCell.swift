@@ -46,11 +46,11 @@ class CurrencyPickerViewCell: UITableViewCell {
     func setSelection(to selected: Bool) {
         codeLabel.textColor = selected ? selectedColor : deselectedColor
         segment.backgroundColor = selected ? selectedColor : deselectedColor
-        segmentWidthConstraint?.constant = selected ? 5 : 10
+        segmentWidthConstraint?.constant = selected ? 10 : 5
         attributeStack.spacing = selected ? 7 : 2
         
         UIView.animate(withDuration: 0.2) {
-            self.codeLabel.transform = selected ? CGAffineTransform(scaleX: 1.1, y: 1.1) : .identity
+            self.codeLabel.transform = selected ? CGAffineTransform(scaleX: 1.2, y: 1.2) : .identity
             self.layoutIfNeeded()
         }
     }
@@ -80,7 +80,7 @@ class CurrencyPickerViewCell: UITableViewCell {
         
         codeLabel.font = .preferredFont(forTextStyle: .headline)
         
-        segmentWidthConstraint = segment.widthAnchor.constraint(equalToConstant: 10)
+        segmentWidthConstraint = segment.widthAnchor.constraint(equalToConstant: 5)
         segmentWidthConstraint?.isActive = true
         segment.heightAnchor.constraint(equalToConstant: 2).isActive = true
         segment.layer.cornerRadius = 1
@@ -93,7 +93,7 @@ class CurrencyPickerViewCell: UITableViewCell {
         attributeStack.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            attributeStack.topAnchor.constraint(equalTo: contentView.topAnchor),
+            attributeStack.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 16),
             attributeStack.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 8),
             attributeStack.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -8),
         ])
