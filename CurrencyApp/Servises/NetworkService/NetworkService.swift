@@ -60,27 +60,29 @@ class NetworkService {
                 return
             }
             
+            guard let httpResponse = response as? HTTPURLResponse else {
+                completion(.failure(.invalidResponse))
+                return
+            }
+            
+            guard httpResponse.statusCode == 200 else {
+                if let decoded = try? JSONDecoder().decode(ErrorResponse.self, from: data) {
+                    completion(.failure(.server(
+                        message: "\(httpResponse.statusCode) \(decoded.message)"
+                    )))
+                } else {
+                    completion(.failure(.invalidResponseErrorMessage))
+                }
+                return
+            }
+            
             do {
                 let decoded = try JSONDecoder().decode(T.self, from: data)
                 completion(.success(decoded))
             } catch {
                 completion(.failure(.decoding(error: error)))
             }
-
-            if let httpResponse = response as? HTTPURLResponse {
-                guard httpResponse.statusCode != 200 else { return }
-                
-                if let decoded = try? JSONDecoder().decode(ResponseErrorMessage.self, from: data) {
-                    completion(.failure(.server(
-                        message: "\(httpResponse.statusCode) \(decoded.message)")))
-                }
-                else {
-                    completion(.failure(.invalidResponseErrorMessage))
-                }
-            }
-            else {
-               completion(.failure(.invalidResponse))
-           }
+            
         }.resume()
     }
 }

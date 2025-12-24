@@ -22,9 +22,9 @@ extension NetworkServiceError: LocalizedError {
     
     var errorDescription: String? {
         switch self {
-        case .network(let error): return "NetworkService error: \(error.localizedDescription)"
-        case .decoding(let error): return "NetworkService error: \(error.localizedDescription)"
-        case .server(let message): return "NetworkService error: \(message)"
+        case .network(let error): return "NetworkService network error: \(error.localizedDescription)"
+        case .decoding(let error): return "NetworkService decoding error: \(error.localizedDescription)"
+        case .server(let message): return "NetworkService server error: \(message)"
         case .invalidResponse: return "NetworkService error: invalid response"
         case .invalidData: return "NetworkService error: invalid data"
         case .invalidURL: return "NetworkService error: invalid URL"
@@ -35,13 +35,13 @@ extension NetworkServiceError: LocalizedError {
     var userMessage: String {
         switch self {
         case .network:
-            return "Internet connection issues\nPull down to restart"
+            return "Internet connection issues"
         case .server:
-            return "The server is temporarily unavailable\nPull down to restart"
+            return "The server is temporarily unavailable"
         case .decoding, .invalidData:
-            return "Something went wrong\nPull down to restart"
+            return "Something went wrong"
         case .invalidURL, .invalidResponse, .invalidResponseErrorMessage:
-            return "An unexpected error occurred\nPull down to restart"
+            return "An unexpected error occurred"
         }
     }
 }

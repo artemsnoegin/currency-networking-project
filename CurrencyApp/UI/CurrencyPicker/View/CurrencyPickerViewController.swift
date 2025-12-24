@@ -30,7 +30,7 @@ class CurrencyPickerViewController: UIViewController {
     override func loadView() {
         super.loadView()
         
-        viewModel.getCurrencies()
+        viewModel.updateCurrencies()
     }
     
     override func viewDidLoad() {
@@ -43,26 +43,26 @@ class CurrencyPickerViewController: UIViewController {
     
     private func bind() {
         viewModel.currencies.bind { currencies in
-            DispatchQueue.main.async { [weak self] in
-                self?.leftPickerView.setCurrencies(currencies)
-                self?.rightPickerView.setCurrencies(currencies)
-            }
+            self.leftPickerView.setCurrencies(currencies)
+            self.rightPickerView.setCurrencies(currencies)
         }
         viewModel.convertedString.bind { amount in
-            DispatchQueue.main.async { [weak self] in
-                self?.rightPickerView.setCurrencyAmount(amount)
-            }
+            self.rightPickerView.setCurrencyAmount(amount)
         }
         viewModel.errorMessage.bind { errorMessage in
             if let errorMessage {
-                DispatchQueue.main.async { [weak self] in
-                    self?.showErrorView(with: errorMessage)
-                }
+                self.showErrorView(with: errorMessage)
             }
             else {
-                DispatchQueue.main.async { [weak self] in
-                    self?.hideErrorView()
-                }
+                self.hideErrorView()
+            }
+        }
+        viewModel.isLoading.bind { loading in
+            if loading {
+                
+            }
+            else {
+                
             }
         }
     }
