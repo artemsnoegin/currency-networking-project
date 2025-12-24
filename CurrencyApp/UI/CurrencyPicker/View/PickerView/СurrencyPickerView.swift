@@ -132,7 +132,7 @@ class CurrencyPickerView: UIView {
         textField.textAlignment = .center
         textField.keyboardType = .numberPad
         textField.adjustsFontSizeToFitWidth = true
-        textField.isEnabled = configuration.isBaseCurrencyPicker
+        textField.isEnabled = configuration.pickerType == .base
         textField.delegate = self
         textField.backgroundColor = configuration.pickerColor.withAlphaComponent(0.5)
         textField.layer.cornerRadius = 5
@@ -179,7 +179,7 @@ extension CurrencyPickerView: UITableViewDelegate, UITableViewDataSource {
         cell?.setSelection(to: true)
         tableView.scrollToRow(at: indexPath, at: .middle, animated: true)
         
-        delegate?.didSelectCurrency(currencies[indexPath.row], in: self)
+        delegate?.didSelectCurrency(currencies[indexPath.row], in: configuration.pickerType)
     }
         
     func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
@@ -217,6 +217,6 @@ extension CurrencyPickerView: UITextFieldDelegate {
     func textFieldDidChangeSelection(_ textField: UITextField) {
         guard let text = textField.text else { return }
         
-        delegate?.didChange(amount: text, in: self)
+        delegate?.didChange(amount: text, in: configuration.pickerType)
     }
 }

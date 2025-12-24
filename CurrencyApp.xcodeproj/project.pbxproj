@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXFileReference section */
+		D936F1A02EF433FA0015F7F2 /* Config.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Config.xcconfig; sourceTree = "<group>"; };
 		D988B5402ED1CFC4000E5823 /* CurrencyApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CurrencyApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -204,6 +205,7 @@
 		};
 		D988B5562ED1CFC6000E5823 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = D936F1A02EF433FA0015F7F2 /* Config.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -268,6 +270,7 @@
 		};
 		D988B5572ED1CFC6000E5823 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = D936F1A02EF433FA0015F7F2 /* Config.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;

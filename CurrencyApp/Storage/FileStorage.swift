@@ -1,5 +1,5 @@
 //
-//  UserFileManager.swift
+//  FileStorage.swift
 //  CurrencyApp
 //
 //  Created by Артём Сноегин on 12.12.2025.
@@ -7,7 +7,7 @@
 
 import Foundation
 
-class UserFileManager {
+class FileStorage: CurrencyStorage {
     
     private let fileManager = FileManager.default
     private var tempDirectory: URL { fileManager.temporaryDirectory }
@@ -26,18 +26,18 @@ class UserFileManager {
         saveToFile(exchangeRates, to: fileURl)
     }
     
-    func loadCurrenciesFromTemp() -> [Currency]? {
+    func loadCurrenciesFromTemp(allowOutdated: Bool) -> [Currency]? {
         guard let cashFolderURL = getCashFolder() else { return nil}
         
         let fileURL = cashFolderURL.appendingPathComponent("Currencies.json")
-        return loadContentsOfFile(from: fileURL)
+        return loadContentsOfFile(from: fileURL, allowOutdated: allowOutdated)
     }
     
-    func loadExchangeRatesFromTemp(for currency: Currency) -> [String:Double]? {
+    func loadExchangeRatesFromTemp(for currency: Currency, allowOutdated: Bool) -> [String:Double]? {
         guard let cashFolderURL = getCashFolder() else { return nil }
         
         let fileURL = cashFolderURL.appendingPathComponent("\(currency.code)_rates.json")
-        return loadContentsOfFile(from: fileURL)
+        return loadContentsOfFile(from: fileURL, allowOutdated: allowOutdated)
     }
     
     private func getCashFolder() -> URL? {
@@ -68,10 +68,13 @@ class UserFileManager {
         }
     }
     
-    private func loadContentsOfFile<T:Codable>(from fileURL: URL) -> T? {
-        guard fileManager.fileExists(atPath: fileURL.path),
-              isUpToDate(contentsOf: fileURL)
+    private func loadContentsOfFile<T:Codable>(from fileURL: URL, allowOutdated: Bool) -> T? {
+        guard fileManager.fileExists(atPath: fileURL.path)
         else { return nil }
+        
+        if !allowOutdated {
+            guard isUpToDate(contentsOf: fileURL) else { return nil}
+        }
         
         do {
             let data = try Data(contentsOf: fileURL)

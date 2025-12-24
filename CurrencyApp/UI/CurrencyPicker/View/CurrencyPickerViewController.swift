@@ -11,8 +11,8 @@ class CurrencyPickerViewController: UIViewController {
     
     private let viewModel: CurrencyPickerViewModel
     
-    private let leftPickerView = CurrencyPickerView(configuration: LeftCurrencyPickerConfiguration())
-    private let rightPickerView = CurrencyPickerView(configuration: RightCurrencyPickerConfiguration())
+    private let leftPickerView = CurrencyPickerView(configuration: BasePickerConfiguration())
+    private let rightPickerView = CurrencyPickerView(configuration: TargetPickerConfiguration())
     private let errorView = UIView()
     private var errorViewHeightConstraint: NSLayoutConstraint?
     private let errorLabel = UILabel()
@@ -30,7 +30,7 @@ class CurrencyPickerViewController: UIViewController {
     override func loadView() {
         super.loadView()
         
-        viewModel.getCurrencies()
+        viewModel.updateCurrencies()
     }
     
     override func viewDidLoad() {
@@ -43,32 +43,32 @@ class CurrencyPickerViewController: UIViewController {
     
     private func bind() {
         viewModel.currencies.bind { currencies in
-            DispatchQueue.main.async { [weak self] in
-                self?.leftPickerView.setCurrencies(currencies)
-                self?.rightPickerView.setCurrencies(currencies)
-            }
+            self.leftPickerView.setCurrencies(currencies)
+            self.rightPickerView.setCurrencies(currencies)
         }
         viewModel.convertedString.bind { amount in
-            DispatchQueue.main.async { [weak self] in
-                self?.rightPickerView.setCurrencyAmount(amount)
-            }
+            self.rightPickerView.setCurrencyAmount(amount)
         }
         viewModel.errorMessage.bind { errorMessage in
             if let errorMessage {
-                DispatchQueue.main.async { [weak self] in
-                    self?.showErrorView(with: errorMessage)
-                }
+                self.showErrorView(with: errorMessage)
             }
             else {
-                DispatchQueue.main.async { [weak self] in
-                    self?.hideErrorView()
-                }
+                self.hideErrorView()
+            }
+        }
+        viewModel.isLoading.bind { loading in
+            if loading {
+                
+            }
+            else {
+                
             }
         }
     }
     
     private func setupPickerView() {
-        leftPickerView.setCurrencyAmount(viewModel.inputString)
+        leftPickerView.setCurrencyAmount(viewModel.currentInputAmount())
         
         leftPickerView.delegate = self
         rightPickerView.delegate = self
@@ -138,22 +138,19 @@ class CurrencyPickerViewController: UIViewController {
 
 extension CurrencyPickerViewController: CurrencyPickerDelegate {
     
-    func didChange(amount stringAmount: String, in picker: CurrencyPickerView) {
-        guard picker == leftPickerView else { return }
+    func didChange(amount stringAmount: String, in picker: CurrencyPickerType) {
+        guard picker == .base else { return }
         
-        viewModel.inputString = stringAmount
-        viewModel.calculateExchangeRate()
+        viewModel.updateInputAmount(stringAmount)
     }
     
-    func didSelectCurrency(_ currency: Currency, in picker: CurrencyPickerView) {
+    func didSelectCurrency(_ currency: Currency, in picker: CurrencyPickerType) {
         
-        if picker == leftPickerView {
-            viewModel.baseCurrency = currency
+        if picker == .base {
+            viewModel.updateBaseCurrency(currency)
         }
         else {
-            viewModel.targetCurrency = currency
+            viewModel.updateTargetCurrency(currency)
         }
-        
-        viewModel.calculateExchangeRate()
     }
 }

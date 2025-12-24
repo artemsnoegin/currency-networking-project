@@ -9,7 +9,7 @@ import Foundation
 
 class NetworkService {
     
-    private let key = "fca_live_v6rL3B3vrtfhxSaUWRg4KemJioVW4uBzOjz0furr"
+    private let key = Bundle.main.object(forInfoDictionaryKey: "CURRENCY_API_KEY") as? String ?? ""
     private let urlString = "https://api.freecurrencyapi.com/v1"
     
     func fetchCurrencies(completion: @escaping (Result<[Currency], NetworkServiceError>) -> Void) {
@@ -60,27 +60,29 @@ class NetworkService {
                 return
             }
             
+            guard let httpResponse = response as? HTTPURLResponse else {
+                completion(.failure(.invalidResponse))
+                return
+            }
+            
+            guard httpResponse.statusCode == 200 else {
+                if let decoded = try? JSONDecoder().decode(ErrorResponse.self, from: data) {
+                    completion(.failure(.server(
+                        message: "\(httpResponse.statusCode) \(decoded.message)"
+                    )))
+                } else {
+                    completion(.failure(.invalidResponseErrorMessage))
+                }
+                return
+            }
+            
             do {
                 let decoded = try JSONDecoder().decode(T.self, from: data)
                 completion(.success(decoded))
             } catch {
                 completion(.failure(.decoding(error: error)))
             }
-
-            if let httpResponse = response as? HTTPURLResponse {
-                guard httpResponse.statusCode != 200 else { return }
-                
-                if let decoded = try? JSONDecoder().decode(ResponseErrorMessage.self, from: data) {
-                    completion(.failure(.server(
-                        message: "\(httpResponse.statusCode) \(decoded.message)")))
-                }
-                else {
-                    completion(.failure(.invalidResponseErrorMessage))
-                }
-            }
-            else {
-               completion(.failure(.invalidResponse))
-           }
+            
         }.resume()
     }
 }

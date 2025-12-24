@@ -17,9 +17,9 @@ class AppCoordinator {
     
     func start() {
         let networkService = NetworkService()
-        let fileManger = UserFileManager()
-        let currencyPickerViewModel = CurrencyPickerViewModel(networkService: networkService,
-                                                              fileManager: fileManger)
+        let fileStorage = FileStorage()
+        let repository = Repository(networkService: networkService, storage: fileStorage)
+        let currencyPickerViewModel = CurrencyPickerViewModel(repository: repository)
         let rootViewController = CurrencyPickerViewController(viewModel:currencyPickerViewModel)
 
         navigationController.setViewControllers([rootViewController], animated: false)

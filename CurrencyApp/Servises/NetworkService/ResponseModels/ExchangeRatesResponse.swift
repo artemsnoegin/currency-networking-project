@@ -6,6 +6,5 @@
 //
 
 struct ExchangeRatesResponse: Decodable {
-    
     let data: [String: Double]
 }
