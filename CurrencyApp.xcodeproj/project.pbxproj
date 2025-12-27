@@ -48,6 +48,7 @@
 			children = (
 				D988B5422ED1CFC4000E5823 /* CurrencyApp */,
 				D988B5412ED1CFC4000E5823 /* Products */,
+				D9C004382F003DEE00E5028C /* Recovered References */,
 			);
 			sourceTree = "<group>";
 		};
@@ -57,6 +58,14 @@
 				D988B5402ED1CFC4000E5823 /* CurrencyApp.app */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		D9C004382F003DEE00E5028C /* Recovered References */ = {
+			isa = PBXGroup;
+			children = (
+				D936F1A02EF433FA0015F7F2 /* Config.xcconfig */,
+			);
+			name = "Recovered References";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -205,7 +214,8 @@
 		};
 		D988B5562ED1CFC6000E5823 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = D936F1A02EF433FA0015F7F2 /* Config.xcconfig */;
+			baseConfigurationReferenceAnchor = D988B5422ED1CFC4000E5823 /* CurrencyApp */;
+			baseConfigurationReferenceRelativePath = Resources/Config.xcconfig;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -270,7 +280,8 @@
 		};
 		D988B5572ED1CFC6000E5823 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = D936F1A02EF433FA0015F7F2 /* Config.xcconfig */;
+			baseConfigurationReferenceAnchor = D988B5422ED1CFC4000E5823 /* CurrencyApp */;
+			baseConfigurationReferenceRelativePath = Resources/Config.xcconfig;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
